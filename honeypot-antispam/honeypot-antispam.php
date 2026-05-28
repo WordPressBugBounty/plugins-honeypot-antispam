@@ -4,7 +4,7 @@
     * Plugin Name:       Honeypot Anti-Spam
     * Plugin URI:        https://wordpress.org/plugins/honeypot-antispam/
     * Description:       No spam in comments. No captcha.
-    * Version:           1.1.0
+    * Version:           1.1.1
     * Requires at least: 6.5
     * Requires PHP:      7.4
     * Author:            Raiola Networks
@@ -20,7 +20,7 @@ if (! defined('ABSPATH')) {
     exit;
 }
 
-define('ANTISPAM_PLUGIN_VERSION', '1.1.0');
+define('ANTISPAM_PLUGIN_VERSION', '1.1.1');
 
 include 'honeypot-antispam-functions.php';
 include 'honeypot-antispam-settings.php';
@@ -82,7 +82,7 @@ function antispam_check_comment($commentdata)
             }
             antispam_counter_stats();
             // die - do not send comment and show error message
-            wp_die(esc_html__('Comment is a spam.', 'honeypot-antispam'));
+            wp_die(esc_html__('This comment looks like spam.', 'honeypot-antispam'));
         }
     }
 
@@ -109,7 +109,7 @@ function antispam_plugin_meta($links, $file)
 {
     if ($file == plugin_basename(__FILE__)) {
         $row_meta = [
-            'support' => '<a href="https://raiolanetworks.es/anti-spam/" target="_blank">'.__('Honeypot Antispam - Support', 'honeypot-antispam').'</a>',
+            'support' => '<a href="https://raiolanetworks.com/anti-spam/" target="_blank">'.__('Honeypot Antispam - Support', 'honeypot-antispam').'</a>',
         ];
         $links = array_merge($links, $row_meta);
     }

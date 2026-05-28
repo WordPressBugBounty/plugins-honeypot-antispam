@@ -68,9 +68,14 @@ function antispam_settings()
         <div class="antispam-panel-info">
             <p style="margin: 0;">
                 <span class="dashicons dashicons-chart-bar"></span>
-                <strong><?php echo esc_html((int) $blocked_total); ?></strong> <?php echo esc_html__('spam comments were blocked by', 'honeypot-antispam'); ?>
-                <a href="https://wordpress.org/plugins/honeypot-antispam/" target="_blank">Honeypot
-                    Antispam</a> <?php echo esc_html__('plugin so far', 'honeypot-antispam'); ?>.
+				<?php
+                echo wp_kses_post(sprintf(
+                    /* translators: 1: number of blocked spam comments, 2: plugin link */
+                    esc_html__('%1$s spam comments were blocked by %2$s plugin so far.', 'honeypot-antispam'),
+                    '<strong>'.esc_html((int) $blocked_total).'</strong>',
+                    '<a href="https://wordpress.org/plugins/honeypot-antispam/" target="_blank">Honeypot Antispam</a>'
+                ));
+    ?>
             </p>
         </div>
 

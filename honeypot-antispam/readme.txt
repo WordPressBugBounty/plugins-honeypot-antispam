@@ -5,7 +5,7 @@ Tags: antispam, honeypot, spam, comment, security
 Requires at least: 6.5
 Requires PHP: 7.4
 Tested up to: 7.0
-Stable tag: 1.1.0
+Stable tag: 1.1.1
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -51,10 +51,19 @@ Servicio de hosting para WordPress de Raiola Networks.
 
 == Upgrade Notice ==
 
+= 1.1.1 =
+Corrige y completa las traducciones al español, unifica los textos traducibles y arregla la URL de soporte.
+
 = 1.1.0 =
 Actualización recomendada: compatibilidad con WordPress 7.0 y PHP 8, además de mejoras de seguridad. Requiere WordPress 6.5+ y PHP 7.4+.
 
 == Changelog ==
+= 1.1.1 - 2026-05-28 =
+* Corregidas y completadas las traducciones al español (avisos, mensajes y ajustes que se mostraban en inglés).
+* Unificado el texto de estadísticas en una sola cadena traducible con marcadores de posición.
+* Corregido un error tipográfico en la traducción ("Guadar" → "Guardar").
+* Corregida la URL de la página de soporte (.es → .com).
+
 = 1.1.0 - 2026-05-28 =
 * Compatibilidad con WordPress 7.0 y PHP 7.4–8.x.
 * Seguridad: escapado de toda la salida, verificación de nonce y capacidad en las opciones de pantalla, saneado de entradas ($_POST/$_SERVER con wp_unslash).
