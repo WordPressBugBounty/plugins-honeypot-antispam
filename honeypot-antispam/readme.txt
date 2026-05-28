@@ -2,12 +2,12 @@
 Contributors: RaiolaNetworks
 Donate link: https://raiolanetworks.com/
 Tags: antispam, honeypot, spam, comment, security
-Requires at least: 3.3
-Requires PHP: 5.6
-Tested up to: 6.6.1
-Stable tag: 1.0.5
+Requires at least: 6.5
+Requires PHP: 7.4
+Tested up to: 7.0
+Stable tag: 1.1.0
 License: GPLv3
-License URI: http://www.gnu.org/licenses/gpl.html
+License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
 Protege WordPress del SPAM mediante honeypot.
 
@@ -49,7 +49,20 @@ No, Honeypot Anti-Spam no es compatible con otros sistemas de comentarios que no
 
 Servicio de hosting para WordPress de Raiola Networks.
 
+== Upgrade Notice ==
+
+= 1.1.0 =
+Actualización recomendada: compatibilidad con WordPress 7.0 y PHP 8, además de mejoras de seguridad. Requiere WordPress 6.5+ y PHP 7.4+.
+
 == Changelog ==
+= 1.1.0 - 2026-05-28 =
+* Compatibilidad con WordPress 7.0 y PHP 7.4–8.x.
+* Seguridad: escapado de toda la salida, verificación de nonce y capacidad en las opciones de pantalla, saneado de entradas ($_POST/$_SERVER con wp_unslash).
+* Settings API: register_setting con sanitize_callback y eliminación de escritura innecesaria de opciones en cada carga del admin.
+* Avisos de administración migrados a wp_admin_notice() (sustituye la clase obsoleta update-nag).
+* Corregida variable indefinida y uso de date() reemplazado por gmdate().
+* Cabeceras del plugin actualizadas: Requires at least, Requires PHP, License/License URI.
+
 = 1.0.5 - 2024-08-01 =
 * JS code linting 
 * PHP JS code linting 

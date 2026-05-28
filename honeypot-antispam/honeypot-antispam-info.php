@@ -16,15 +16,19 @@ function antispam_admin_notice()
             if (isset($antispam_stats['blocked_total'])) {
                 $blocked_total = $antispam_stats['blocked_total'];
             }
-            ?>
-            <div class="update-nag antispam-panel-info">
-                <p style="margin: 0;">
-					<?php echo $blocked_total; ?> <?php echo __('spam comments were blocked by', 'honeypot-antispam'); ?>
-                    <a href="http://wordpress.org/plugins/honeypot-antispam/">Honeypot
-                        Antispam</a> <?php echo __('plugin so far', 'honeypot-antispam'); ?>.
-                </p>
-            </div>
-		<?php
+
+            $message = sprintf(
+                /* translators: 1: number of blocked spam comments, 2: plugin link */
+                esc_html__('%1$s spam comments were blocked by %2$s plugin so far.', 'honeypot-antispam'),
+                '<strong>'.esc_html((int) $blocked_total).'</strong>',
+                '<a href="https://wordpress.org/plugins/honeypot-antispam/">Honeypot Antispam</a>'
+            );
+
+            wp_admin_notice($message, [
+                'type' => 'info',
+                'additional_classes' => ['antispam-panel-info'],
+                'dismissible' => false,
+            ]);
         } // end of if($antispam_info_visibility)
     } // end of if($pagenow == 'edit-comments.php')
 }
@@ -51,12 +55,13 @@ function antispam_display_screen_option()
             });
         </script>
         <form method="post" class="antispam_screen_options_group" style="padding: 20px 0 5px 0;">
+			<?php wp_nonce_field('antispam_screen_option', 'antispam_screen_option_nonce'); ?>
             <input type="hidden" name="antispam_option_submit" value="1"/>
             <label>
                 <input name="antispam_info_visibility" type="checkbox" value="1" <?php echo $checked; ?> />
-                Anti-spam info
+				<?php esc_html_e('Anti-spam info', 'honeypot-antispam'); ?>
             </label>
-            <input type="submit" class="button" value="<?php _e('Apply'); ?>"/>
+            <input type="submit" class="button" value="<?php esc_attr_e('Apply', 'honeypot-antispam'); ?>"/>
         </form>
 	<?php
     } // end of if($pagenow == 'edit-comments.php')
@@ -71,14 +76,22 @@ add_action('admin_head', 'antispam_register_screen_option');
 
 function antispam_update_screen_option()
 {
-    if (isset($_POST['antispam_option_submit']) and $_POST['antispam_option_submit'] == 1) {
-        $user_id = get_current_user_id();
-        if (isset($_POST['antispam_info_visibility']) and $_POST['antispam_info_visibility'] == 1) {
-            update_user_meta($user_id, 'antispam_info_visibility', 1);
-        } else {
-            update_user_meta($user_id, 'antispam_info_visibility', 0);
-        }
+    if (! isset($_POST['antispam_option_submit'])) {
+        return;
     }
+
+    // verify CSRF nonce and capability before persisting user preference
+    if (! isset($_POST['antispam_screen_option_nonce']) || ! wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['antispam_screen_option_nonce'])), 'antispam_screen_option')) {
+        return;
+    }
+
+    if (! current_user_can('edit_posts')) {
+        return;
+    }
+
+    $user_id = get_current_user_id();
+    $visibility = (isset($_POST['antispam_info_visibility']) && absint($_POST['antispam_info_visibility']) === 1) ? 1 : 0;
+    update_user_meta($user_id, 'antispam_info_visibility', $visibility);
 }
 
 add_action('admin_init', 'antispam_update_screen_option');

@@ -24,9 +24,9 @@ function antispam_get_settings()
 
 function antispam_counter_stats()
 {
-    $antispam_stats = get_option('antispam_stats', []);
+    $antispam_stats = (array) get_option('antispam_stats', []);
     if (array_key_exists('blocked_total', $antispam_stats)) {
-        $antispam_stats['blocked_total']++;
+        $antispam_stats['blocked_total'] = (int) $antispam_stats['blocked_total'] + 1;
     } else {
         $antispam_stats['blocked_total'] = 1;
     }
@@ -39,28 +39,28 @@ function antispam_check_for_spam()
 
     $antspm_q = '';
     if (isset($_POST['antspm-q'])) {
-        $antspm_q = trim(sanitize_text_field($_POST['antspm-q']));
+        $antspm_q = trim(sanitize_text_field(wp_unslash($_POST['antspm-q'])));
     }
 
     $antspm_d = '';
     if (isset($_POST['antspm-d'])) {
-        $antspm_d = trim(sanitize_text_field($_POST['antspm-d']));
+        $antspm_d = trim(sanitize_text_field(wp_unslash($_POST['antspm-d'])));
     }
 
-    $antspm_e = '';
     if (isset($_POST['antspm-e-email-url-website'])) {
         $spam_flag = (! empty($_POST['antspm-e-email-url-website'])) ? 'true' : ''; // trap field is not empty - it is spam
     }
 
-    if ($antspm_q != date('Y')) { // year-answer is wrong - it is spam
-        if ($antspm_d != date('Y')) { // extra js-only check: there is no js added input - it is spam
+    $current_year = gmdate('Y');
+    if ($antspm_q != $current_year) { // year-answer is wrong - it is spam
+        if ($antspm_d != $current_year) { // extra js-only check: there is no js added input - it is spam
             $spam_flag = true;
         }
     }
 
-    //if ( ! empty( $antspm_e ) ) { // trap field is not empty - it is spam
+    // if ( ! empty( $antspm_e ) ) { // trap field is not empty - it is spam
     //	$spam_flag = true;
-    //}
+    // }
 
     return $spam_flag;
 }
@@ -68,6 +68,8 @@ function antispam_check_for_spam()
 function antispam_store_comment($commentdata)
 {
     global $wpdb;
+
+    $avoid_die = false;
 
     if (isset($commentdata['user_ID'])) {
         $commentdata['user_id'] = $commentdata['user_ID'] = (int) $commentdata['user_ID'];
@@ -87,12 +89,12 @@ function antispam_store_comment($commentdata)
     $commentdata['comment_parent'] = ($parent_status == 'approved' || $parent_status == 'unapproved') ? $commentdata['comment_parent'] : 0;
 
     if (! isset($commentdata['comment_author_IP'])) {
-        $commentdata['comment_author_IP'] = $_SERVER['REMOTE_ADDR'];
+        $commentdata['comment_author_IP'] = isset($_SERVER['REMOTE_ADDR']) ? sanitize_text_field(wp_unslash($_SERVER['REMOTE_ADDR'])) : '';
     }
     $commentdata['comment_author_IP'] = preg_replace('/[^0-9a-fA-F:., ]/', '', $commentdata['comment_author_IP']);
 
     if (! isset($commentdata['comment_agent'])) {
-        $commentdata['comment_agent'] = isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : '';
+        $commentdata['comment_agent'] = isset($_SERVER['HTTP_USER_AGENT']) ? sanitize_text_field(wp_unslash($_SERVER['HTTP_USER_AGENT'])) : '';
     }
     $commentdata['comment_agent'] = substr($commentdata['comment_agent'], 0, 254);
 

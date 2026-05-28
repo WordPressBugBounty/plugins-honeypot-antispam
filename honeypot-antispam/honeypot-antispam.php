@@ -1,13 +1,18 @@
 <?php
+
 /*
-    * Plugin Name:    Honeypot Anti-Spam
-    * Plugin URI:     http://wordpress.org/plugins/honeypot-antispam/
-    * Description:    No spam in comments. No captcha.
-    * Version:        1.0.5
-    * Author:         Raiola Networks
-    * Author URI:     https://raiolanetworks.com/
-    * Text Domain:    honeypot-antispam
-    * Domain Path:    /languages
+    * Plugin Name:       Honeypot Anti-Spam
+    * Plugin URI:        https://wordpress.org/plugins/honeypot-antispam/
+    * Description:       No spam in comments. No captcha.
+    * Version:           1.1.0
+    * Requires at least: 6.5
+    * Requires PHP:      7.4
+    * Author:            Raiola Networks
+    * Author URI:        https://raiolanetworks.com/
+    * License:           GPLv3
+    * License URI:       https://www.gnu.org/licenses/gpl-3.0.html
+    * Text Domain:       honeypot-antispam
+    * Domain Path:       /languages
 */
 
 // Avoid direct calls to this file and prevent full path disclosure
@@ -15,7 +20,7 @@ if (! defined('ABSPATH')) {
     exit;
 }
 
-define('ANTISPAM_PLUGIN_VERSION', '1.0.5');
+define('ANTISPAM_PLUGIN_VERSION', '1.1.0');
 
 include 'honeypot-antispam-functions.php';
 include 'honeypot-antispam-settings.php';
@@ -45,16 +50,16 @@ function antispam_form_part()
 
     // add honeypot-antispam fields only for not logged in users
     if (! is_user_logged_in()) {
-        echo $rn.'<!-- Honeypot Antispam plugin v.'.ANTISPAM_PLUGIN_VERSION.' wordpress.org/plugins/honeypot-antispam/ -->'.$rn;
+        echo $rn.'<!-- Honeypot Antispam plugin wordpress.org/plugins/honeypot-antispam/ -->'.$rn;
         // question (hidden with js)
         echo '		<p class="antispam-group antispam-group-q" style="clear: both;">
-			<label>Current ye@r <span class="required">*</span></label>
-			<input type="hidden" name="antspm-a" class="antispam-control antispam-control-a" value="'.date('Y').'" />
-			<input type="text" name="antspm-q" class="antispam-control antispam-control-q" value="'.ANTISPAM_PLUGIN_VERSION.'" autocomplete="off" />
+			<label>'.esc_html__('Current ye@r', 'honeypot-antispam').' <span class="required">*</span></label>
+			<input type="hidden" name="antspm-a" class="antispam-control antispam-control-a" value="'.esc_attr(gmdate('Y')).'" />
+			<input type="text" name="antspm-q" class="antispam-control antispam-control-q" value="'.esc_attr(ANTISPAM_PLUGIN_VERSION).'" autocomplete="off" />
 		</p>'.$rn;
         // empty field (hidden with css); trap for spammers because many bots will try to put email or url here
         echo '		<p class="antispam-group antispam-group-e" style="display: none;">
-			<label>Leave this field empty</label>
+			<label>'.esc_html__('Leave this field empty', 'honeypot-antispam').'</label>
 			<input type="text" name="antspm-e-email-url-website" class="antispam-control antispam-control-e" value="" autocomplete="off" />
 		</p>'.$rn;
     }
@@ -67,7 +72,7 @@ function antispam_check_comment($commentdata)
 {
     $antispam_settings = antispam_get_settings();
 
-    extract($commentdata);
+    $comment_type = isset($commentdata['comment_type']) ? $commentdata['comment_type'] : '';
 
     // logged in user is not a spammer
     if (! is_user_logged_in() && $comment_type !== 'pingback' && $comment_type !== 'trackback' && $comment_type !== 'webmention') {
@@ -77,7 +82,7 @@ function antispam_check_comment($commentdata)
             }
             antispam_counter_stats();
             // die - do not send comment and show error message
-            wp_die('Comment is a spam.');
+            wp_die(esc_html__('Comment is a spam.', 'honeypot-antispam'));
         }
     }
 
@@ -87,7 +92,7 @@ function antispam_check_comment($commentdata)
         }
         antispam_counter_stats();
         // die - do not send trackback and show error message
-        wp_die('Trackbacks are disabled.');
+        wp_die(esc_html__('Trackbacks are disabled.', 'honeypot-antispam'));
     }
 
     // if comment does not looks like spam
